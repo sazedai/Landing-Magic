@@ -1,0 +1,8 @@
+{
+  "name": "Landing Page Builder Pro Training",
+  "description": "A professional landing page for SME training in Bangladesh, focusing on landing page building, AI, and automation.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

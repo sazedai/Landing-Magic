@@ -1,0 +1,181 @@
+
+import React, { useState, useEffect } from 'react';
+import { Send, CheckCircle, AlertCircle } from 'lucide-react';
+
+const FeedbackForm: React.FC = () => {
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
+  const [errors, setErrors] = useState({ name: '', phone: '', message: '' });
+  const [touched, setTouched] = useState({ name: false, phone: false, message: false });
+
+  const validateField = (name: string, value: string) => {
+    let error = '';
+    if (name === 'name') {
+      if (value.length === 0) error = 'নাম প্রয়োজন';
+      else if (value.length < 3) error = 'নাম অন্তত ৩ অক্ষরের হতে হবে';
+    }
+    if (name === 'phone') {
+      const phoneRegex = /^01[3-9]\d{8}$/;
+      if (value.length === 0) error = 'ফোন নম্বর প্রয়োজন';
+      else if (!phoneRegex.test(value)) error = 'সঠিক বাংলাদেশী ফোন নম্বর দিন (যেমন: 01712345678)';
+    }
+    if (name === 'message') {
+      if (value.length === 0) error = 'মেসেজ প্রয়োজন';
+      else if (value.length < 10) error = 'মেসেজ অন্তত ১০ অক্ষরের হতে হবে';
+    }
+    setErrors(prev => ({ ...prev, [name]: error }));
+    return error === '';
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (touched[name as keyof typeof touched]) {
+      validateField(name, value);
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    validateField(name, value);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const fields = ['name', 'phone', 'message'] as const;
+    const isTouched = { name: true, phone: true, message: true };
+    setTouched(isTouched);
+    
+    const isValid = fields.every(field => validateField(field, formData[field]));
+    
+    if (isValid) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setSubmitted(true);
+      }, 1500);
+    }
+  };
+
+  return (
+    <section id="feedback" className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 md:p-14 shadow-2xl border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+          
+          <div className="text-center mb-12 relative z-10">
+            <h2 className="text-4xl font-black mb-4">আপনার মতামত দিন</h2>
+            <p className="text-slate-600 dark:text-slate-400 text-lg">কোর্স সম্পর্কে কিছু জানার থাকলে আমাদের লিখে জানান।</p>
+          </div>
+
+          {submitted ? (
+            <div className="text-center py-16 animate-fade-in">
+              <div className="inline-flex items-center justify-center w-28 h-28 rounded-full bg-accent/10 text-accent mb-8">
+                <CheckCircle size={56} />
+              </div>
+              <h3 className="text-3xl font-black mb-4">সফল হয়েছে!</h3>
+              <p className="text-slate-600 dark:text-slate-400 text-lg">আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো।</p>
+              <button 
+                onClick={() => {
+                  setSubmitted(false);
+                  setFormData({ name: '', phone: '', message: '' });
+                  setTouched({ name: false, phone: false, message: false });
+                  setErrors({ name: '', phone: '', message: '' });
+                }}
+                className="mt-10 text-accent font-black hover:underline text-lg"
+              >
+                নতুন একটি মেসেজ পাঠান
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="block text-sm font-black text-slate-700 dark:text-slate-300 ml-1">আপনার নাম</label>
+                  <input
+                    name="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 focus:ring-4 outline-none transition-all ${
+                      touched.name && errors.name 
+                      ? 'border-red-500 focus:ring-red-500/10' 
+                      : touched.name && !errors.name ? 'border-accent focus:ring-accent/10' : 'border-slate-100 dark:border-slate-700 focus:ring-accent/10 focus:border-accent'
+                    }`}
+                    placeholder="পুরো নাম লিখুন"
+                  />
+                  {touched.name && errors.name && (
+                    <p className="text-red-500 text-xs font-bold flex items-center gap-1.5 ml-2 animate-fade-in">
+                      <AlertCircle size={14} /> {errors.name}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-black text-slate-700 dark:text-slate-300 ml-1">ফোন নম্বর</label>
+                  <input
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 focus:ring-4 outline-none transition-all ${
+                      touched.phone && errors.phone 
+                      ? 'border-red-500 focus:ring-red-500/10' 
+                      : touched.phone && !errors.phone ? 'border-accent focus:ring-accent/10' : 'border-slate-100 dark:border-slate-700 focus:ring-accent/10 focus:border-accent'
+                    }`}
+                    placeholder="01XXXXXXXXX"
+                  />
+                  {touched.phone && errors.phone && (
+                    <p className="text-red-500 text-xs font-bold flex items-center gap-1.5 ml-2 animate-fade-in">
+                      <AlertCircle size={14} /> {errors.phone}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-black text-slate-700 dark:text-slate-300 ml-1">বার্তা</label>
+                <textarea
+                  name="message"
+                  rows={4}
+                  value={formData.message}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 focus:ring-4 outline-none transition-all ${
+                    touched.message && errors.message 
+                    ? 'border-red-500 focus:ring-red-500/10' 
+                    : touched.message && !errors.message ? 'border-accent focus:ring-accent/10' : 'border-slate-100 dark:border-slate-700 focus:ring-accent/10 focus:border-accent'
+                  }`}
+                  placeholder="আপনার প্রশ্ন বা মতামত..."
+                ></textarea>
+                {touched.message && errors.message && (
+                  <p className="text-red-500 text-xs font-bold flex items-center gap-1.5 ml-2 animate-fade-in">
+                    <AlertCircle size={14} /> {errors.message}
+                  </p>
+                )}
+              </div>
+              <button
+                disabled={loading}
+                type="submit"
+                className="w-full flex items-center justify-center gap-3 bg-accent hover:bg-secondary text-slate-900 font-black py-6 rounded-[2rem] transition-all disabled:opacity-50 active:scale-95 shadow-xl shadow-accent/20"
+              >
+                {loading ? (
+                  <div className="w-7 h-7 border-4 border-slate-900/30 border-t-slate-900 rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <Send size={22} />
+                    মেসেজ পাঠান
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default FeedbackForm;
