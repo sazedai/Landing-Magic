@@ -164,8 +164,8 @@ const ChatBot: React.FC = () => {
               </div>
               
               <form onSubmit={handleLogin} className="space-y-3">
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <div className="relative group">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-accent transition-colors">
                     <Mail size={16} />
                   </div>
                   <input 
@@ -174,7 +174,7 @@ const ChatBot: React.FC = () => {
                     value={contactInfo}
                     onChange={(e) => setContactInfo(e.target.value)}
                     placeholder="Email or Phone"
-                    className="w-full pl-10 pr-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-accent text-slate-900 dark:text-white font-bold transition-all text-xs"
+                    className="w-full pl-10 pr-3 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-accent focus:ring-4 focus:ring-accent/10 text-slate-900 dark:text-white font-bold transition-all text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
                 <button 
@@ -220,7 +220,7 @@ const ChatBot: React.FC = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="প্রশ্ন..."
-                  className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-lg px-3 py-2 text-xs font-bold focus:ring-1 focus:ring-accent outline-none text-slate-900 dark:text-white"
+                  className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-lg px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-accent/20 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
                 <button 
                   type="submit" 

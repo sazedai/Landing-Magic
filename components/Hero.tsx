@@ -19,7 +19,7 @@ const Hero: React.FC = () => {
           
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-slate-900 dark:text-white mb-8 leading-[0.95] md:leading-[1]">
             আপনার ব্যবসাকে <br />
-            <span className="bg-gradient-to-r from-accent via-secondary to-yellow-500 bg-clip-text text-transparent">অটোমেশনে</span> নিয়ে যান
+            <span className="bg-gradient-to-r from-[#F59E0B] via-[#FB923C] to-[#FACC15] bg-clip-text text-transparent">অটোমেশনে</span> নিয়ে যান
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-14 max-w-3xl mx-auto leading-relaxed">
@@ -31,18 +31,19 @@ const Hero: React.FC = () => {
               href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-accent via-secondary to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-900 px-12 py-6 rounded-3xl text-xl font-black transition-all transform hover:scale-105 shadow-[0_20px_50px_rgba(245,158,11,0.3)] active:scale-95"
+              className="relative group w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-br from-[#F59E0B] via-[#FB923C] to-[#EA580C] text-slate-900 px-12 py-6 rounded-[2.5rem] text-xl font-black transition-all transform hover:scale-105 shadow-[0_20px_50px_rgba(245,158,11,0.4)] active:scale-95 overflow-hidden"
             >
-              <MessageCircle size={24} strokeWidth={2.5} />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+              <MessageCircle size={24} strokeWidth={2.5} className="group-hover:rotate-12 transition-transform" />
               কোর্সে জয়েন করুন
             </a>
             <a
               href={AGENCY_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:border-accent px-12 py-6 rounded-3xl text-xl font-bold transition-all transform hover:scale-105 shadow-xl active:scale-95"
+              className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:border-accent px-12 py-6 rounded-[2.5rem] text-xl font-bold transition-all transform hover:scale-105 shadow-xl active:scale-95"
             >
-              <Rocket size={24} />
+              <Rocket size={24} className="text-accent" />
               এজেন্সি সেটআপ
             </a>
           </div>

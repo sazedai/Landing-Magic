@@ -11,7 +11,7 @@ const Modules: React.FC = () => {
     <section id="modules" className="py-32 bg-slate-50 dark:bg-slate-900/30">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-5xl font-black mb-6 tracking-tight">কোর্স <span className="text-accent">মডিউল</span> সমূহ</h2>
+          <h2 className="text-5xl font-black mb-6 tracking-tight dark:text-white">কোর্স <span className="text-accent">মডিউল</span> সমূহ</h2>
           <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">আপনার ব্যবসাকে জিরো থেকে অটোমেশনে নেওয়ার সম্পূর্ণ গাইডলাইন।</p>
         </div>
 
@@ -37,11 +37,17 @@ const Modules: React.FC = () => {
                   }`}>
                     {module.id}
                   </span>
-                  <h3 className={`font-black text-2xl tracking-tight transition-colors duration-500 ${openId === module.id ? 'text-accent' : 'text-slate-800 dark:text-slate-100'}`}>
+                  <h3 className={`font-black text-2xl tracking-tight transition-all duration-300 group-hover:scale-[1.02] ${
+                    openId === module.id 
+                    ? 'text-accent' 
+                    : 'text-slate-800 dark:text-slate-100 group-hover:text-accent'
+                  }`}>
                     {module.title}
                   </h3>
                 </div>
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${openId === module.id ? 'bg-accent/10 text-accent rotate-180' : 'bg-slate-50 dark:bg-slate-800 text-slate-400'}`}>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                  openId === module.id ? 'bg-accent/10 text-accent rotate-180' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-accent/5 group-hover:text-accent'
+                }`}>
                   <ChevronDown size={24} strokeWidth={3} />
                 </div>
               </button>
@@ -78,7 +84,7 @@ const Modules: React.FC = () => {
                                href={video.url} 
                                target="_blank" 
                                rel="noopener" 
-                               className="inline-flex items-center gap-2 text-accent font-black hover:underline text-lg"
+                               className="inline-flex items-center gap-2 text-accent font-black hover:underline text-lg transition-all hover:gap-3"
                              >
                                ভিডিওটি দেখুন <ChevronDown size={20} className="-rotate-90" />
                              </a>

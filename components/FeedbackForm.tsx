@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle, X } from 'lucide-react';
 
 const FeedbackForm: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -14,6 +14,8 @@ const FeedbackForm: React.FC = () => {
     if (name === 'name') {
       if (value.length === 0) error = 'নাম প্রয়োজন';
       else if (value.length < 3) error = 'নাম অন্তত ৩ অক্ষরের হতে হবে';
+      // Basic check for letters and spaces (Bengali and English)
+      else if (!/^[A-Za-z\u0980-\u09FF\s]+$/.test(value)) error = 'নামে শুধুমাত্র অক্ষর ব্যবহার করুন';
     }
     if (name === 'phone') {
       const phoneRegex = /^01[3-9]\d{8}$/;
@@ -30,9 +32,17 @@ const FeedbackForm: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    let processedValue = value;
+    if (name === 'name') {
+      // Real-time filtering to accept only letters and spaces
+      processedValue = value.replace(/[^A-Za-z\u0980-\u09FF\s]/g, '');
+    }
+
+    setFormData(prev => ({ ...prev, [name]: processedValue }));
+    
     if (touched[name as keyof typeof touched]) {
-      validateField(name, value);
+      validateField(name, processedValue);
     }
   };
 
@@ -40,6 +50,10 @@ const FeedbackForm: React.FC = () => {
     const { name, value } = e.target;
     setTouched(prev => ({ ...prev, [name]: true }));
     validateField(name, value);
+  };
+
+  const dismissError = (name: keyof typeof errors) => {
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -66,7 +80,7 @@ const FeedbackForm: React.FC = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
           
           <div className="text-center mb-12 relative z-10">
-            <h2 className="text-4xl font-black mb-4">আপনার মতামত দিন</h2>
+            <h2 className="text-4xl font-black mb-4 dark:text-white">আপনার মতামত দিন</h2>
             <p className="text-slate-600 dark:text-slate-400 text-lg">কোর্স সম্পর্কে কিছু জানার থাকলে আমাদের লিখে জানান।</p>
           </div>
 
@@ -75,7 +89,7 @@ const FeedbackForm: React.FC = () => {
               <div className="inline-flex items-center justify-center w-28 h-28 rounded-full bg-accent/10 text-accent mb-8">
                 <CheckCircle size={56} />
               </div>
-              <h3 className="text-3xl font-black mb-4">সফল হয়েছে!</h3>
+              <h3 className="text-3xl font-black mb-4 dark:text-white">সফল হয়েছে!</h3>
               <p className="text-slate-600 dark:text-slate-400 text-lg">আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো।</p>
               <button 
                 onClick={() => {
@@ -100,17 +114,27 @@ const FeedbackForm: React.FC = () => {
                     value={formData.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 focus:ring-4 outline-none transition-all ${
-                      touched.name && errors.name 
-                      ? 'border-red-500 focus:ring-red-500/10' 
-                      : touched.name && !errors.name ? 'border-accent focus:ring-accent/10' : 'border-slate-100 dark:border-slate-700 focus:ring-accent/10 focus:border-accent'
-                    }`}
-                    placeholder="পুরো নাম লিখুন"
+                    className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 outline-none transition-all duration-300 shadow-sm ${
+                      errors.name 
+                      ? 'border-red-500 focus:ring-4 focus:ring-red-500/10' 
+                      : 'border-slate-100 dark:border-slate-700 focus:border-accent focus:ring-4 focus:ring-accent/15'
+                    } dark:text-white`}
+                    placeholder="নাম লিখুন (অক্ষর ও স্পেস)"
                   />
-                  {touched.name && errors.name && (
-                    <p className="text-red-500 text-xs font-bold flex items-center gap-1.5 ml-2 animate-fade-in">
-                      <AlertCircle size={14} /> {errors.name}
-                    </p>
+                  {errors.name && (
+                    <div className="flex items-center justify-between text-red-500 text-xs font-bold bg-red-50 dark:bg-red-950/20 px-3 py-2 rounded-xl animate-fade-in border border-red-100 dark:border-red-900/30">
+                      <div className="flex items-center gap-1.5">
+                        <AlertCircle size={14} /> 
+                        {errors.name}
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => dismissError('name')}
+                        className="hover:bg-red-100 dark:hover:bg-red-900/40 p-1 rounded-full transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -121,17 +145,27 @@ const FeedbackForm: React.FC = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 focus:ring-4 outline-none transition-all ${
-                      touched.phone && errors.phone 
-                      ? 'border-red-500 focus:ring-red-500/10' 
-                      : touched.phone && !errors.phone ? 'border-accent focus:ring-accent/10' : 'border-slate-100 dark:border-slate-700 focus:ring-accent/10 focus:border-accent'
-                    }`}
+                    className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 outline-none transition-all duration-300 shadow-sm ${
+                      errors.phone 
+                      ? 'border-red-500 focus:ring-4 focus:ring-red-500/10' 
+                      : 'border-slate-100 dark:border-slate-700 focus:border-accent focus:ring-4 focus:ring-accent/15'
+                    } dark:text-white`}
                     placeholder="01XXXXXXXXX"
                   />
-                  {touched.phone && errors.phone && (
-                    <p className="text-red-500 text-xs font-bold flex items-center gap-1.5 ml-2 animate-fade-in">
-                      <AlertCircle size={14} /> {errors.phone}
-                    </p>
+                  {errors.phone && (
+                    <div className="flex items-center justify-between text-red-500 text-xs font-bold bg-red-50 dark:bg-red-950/20 px-3 py-2 rounded-xl animate-fade-in border border-red-100 dark:border-red-900/30">
+                      <div className="flex items-center gap-1.5">
+                        <AlertCircle size={14} /> 
+                        {errors.phone}
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => dismissError('phone')}
+                        className="hover:bg-red-100 dark:hover:bg-red-900/40 p-1 rounded-full transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -143,17 +177,27 @@ const FeedbackForm: React.FC = () => {
                   value={formData.message}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 focus:ring-4 outline-none transition-all ${
-                    touched.message && errors.message 
-                    ? 'border-red-500 focus:ring-red-500/10' 
-                    : touched.message && !errors.message ? 'border-accent focus:ring-accent/10' : 'border-slate-100 dark:border-slate-700 focus:ring-accent/10 focus:border-accent'
-                  }`}
+                  className={`w-full px-6 py-5 rounded-3xl border bg-slate-50 dark:bg-slate-800/50 outline-none transition-all duration-300 shadow-sm ${
+                    errors.message 
+                    ? 'border-red-500 focus:ring-4 focus:ring-red-500/10' 
+                    : 'border-slate-100 dark:border-slate-700 focus:border-accent focus:ring-4 focus:ring-accent/15'
+                  } dark:text-white`}
                   placeholder="আপনার প্রশ্ন বা মতামত..."
                 ></textarea>
-                {touched.message && errors.message && (
-                  <p className="text-red-500 text-xs font-bold flex items-center gap-1.5 ml-2 animate-fade-in">
-                    <AlertCircle size={14} /> {errors.message}
-                  </p>
+                {errors.message && (
+                  <div className="flex items-center justify-between text-red-500 text-xs font-bold bg-red-50 dark:bg-red-950/20 px-3 py-2 rounded-xl animate-fade-in border border-red-100 dark:border-red-900/30">
+                    <div className="flex items-center gap-1.5">
+                      <AlertCircle size={14} /> 
+                      {errors.message}
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => dismissError('message')}
+                      className="hover:bg-red-100 dark:hover:bg-red-900/40 p-1 rounded-full transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
                 )}
               </div>
               <button

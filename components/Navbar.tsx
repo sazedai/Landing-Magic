@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
 import { Menu, X, Moon, Sun } from 'lucide-react';
-import { BRAND_NAME, LOGO_TEXT } from '../constants';
+import { BRAND_NAME } from '../constants';
+import Logo from './Logo';
 
 interface NavbarProps {
   isDark: boolean;
@@ -14,16 +15,31 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, currentView, setVi
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { name: 'হোম', id: 'home' },
-    { name: 'সাপোর্ট', id: 'support' },
-    { name: 'মডিউল', id: 'modules' },
-    { name: 'ফিডব্যাক', id: 'feedback' },
+    { name: 'হোম', id: 'home', hash: '#' },
+    { name: 'সাপোর্ট', id: 'support', hash: '#support' },
+    { name: 'মডিউল', id: 'modules', hash: '#modules' },
+    { name: 'ফিডব্যাক', id: 'feedback', hash: '#feedback' },
   ];
 
-  const handleNav = (id: string) => {
-    setView(id);
+  const handleNav = (id: string, hash: string) => {
     setIsOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === 'home' || currentView !== 'home') {
+      setView('home');
+      // Delay scrolling slightly to allow state change/render if switching views
+      setTimeout(() => {
+        const element = document.getElementById(hash.replace('#', ''));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else if (hash === '#') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(hash.replace('#', ''));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   };
 
   return (
@@ -31,15 +47,10 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, currentView, setVi
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div 
-            className="flex-shrink-0 flex items-center gap-3 cursor-pointer group"
-            onClick={() => handleNav('home')}
+            className="flex-shrink-0 cursor-pointer group"
+            onClick={() => handleNav('home', '#')}
           >
-            <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-slate-900 font-black text-xl shadow-lg shadow-accent/20 group-hover:scale-110 transition-transform">
-              {LOGO_TEXT[0]}
-            </div>
-            <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-              Landing <span className="text-accent">Magic</span>
-            </span>
+            <Logo />
           </div>
 
           {/* Desktop Menu */}
@@ -47,8 +58,8 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, currentView, setVi
             {menuItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => handleNav(item.id)}
-                className={`transition-colors font-bold text-sm ${
+                onClick={() => handleNav(item.id, item.hash)}
+                className={`transition-all font-bold text-sm hover:scale-105 active:scale-95 ${
                   currentView === item.id 
                     ? 'text-accent' 
                     : 'text-slate-500 dark:text-slate-300 hover:text-accent dark:hover:text-accent'
@@ -59,13 +70,13 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, currentView, setVi
             ))}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm"
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <a
               href="https://chat.whatsapp.com/JBXuMy5PmcjHMiAawJStDw"
-              className="bg-accent hover:bg-secondary text-slate-900 px-7 py-3 rounded-2xl transition-all font-bold shadow-lg shadow-accent/20 active:scale-95"
+              className="bg-accent hover:bg-secondary text-slate-900 px-7 py-3 rounded-2xl transition-all font-black shadow-lg shadow-accent/20 active:scale-95"
             >
               জয়েন করুন
             </a>
@@ -91,11 +102,11 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, currentView, setVi
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white dark:bg-dark border-b border-slate-100 dark:border-slate-800 px-4 py-6 space-y-4 shadow-2xl">
+        <div className="md:hidden bg-white dark:bg-dark border-b border-slate-100 dark:border-slate-800 px-4 py-6 space-y-4 shadow-2xl animate-fade-in">
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleNav(item.id)}
+              onClick={() => handleNav(item.id, item.hash)}
               className={`block w-full text-left px-4 py-3 rounded-2xl text-lg font-bold transition-colors ${
                 currentView === item.id 
                   ? 'text-accent bg-accent/5' 
